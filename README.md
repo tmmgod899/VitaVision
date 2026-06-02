@@ -246,6 +246,12 @@ Users should consult a qualified healthcare professional before making any medic
 ✅ Smart AI Upload added
 
 ---
+## 👨‍💻 Project Team
+
+* Talal Ahmed Salem
+* Abdulmalik Hassan Bajandooh
+* Ali Abdulrahman Aqeel
+* Abdulmajeed Abdulaziz Humaidan
 
 ## 🌿 VitaVision
 
