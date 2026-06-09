@@ -19,13 +19,9 @@ st.set_page_config(
     layout="wide"
 )
 
-
 # =========================================
 # Load ML Model + OpenAI
 # =========================================
-
-import os
-
 MODEL_PATH = "models/vitavision_hybrid_model_v1.pkl"
 
 @st.cache_resource
@@ -36,31 +32,20 @@ def load_ml_model():
 
 ml_model = load_ml_model()
 
-# =========================================
-# OpenAI API Configuration
-# =========================================
-
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-
 try:
-    client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
+    client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 except Exception:
     client = None
+
+OPENAI_MODEL = st.secrets.get("OPENAI_MODEL", "gpt-4o-mini") if client else "gpt-4o-mini"
 
 # =========================================
 # Supabase Auth + Database
 # =========================================
-
 try:
-    SUPABASE_URL = os.getenv("SUPABASE_URL")
-    SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
-
-    supabase = create_client(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-    ) if SUPABASE_URL and SUPABASE_ANON_KEY else None
-
+    SUPABASE_URL = st.secrets["SUPABASE_URL"]
+    SUPABASE_ANON_KEY = st.secrets["SUPABASE_ANON_KEY"]
+    supabase = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 except Exception:
     supabase = None
 
@@ -79,6 +64,7 @@ if "auth_role" not in st.session_state:
 
 if "auth_email" not in st.session_state:
     st.session_state["auth_email"] = None
+
 # =========================================
 # Disclaimer dialog
 # =========================================
@@ -116,7 +102,7 @@ def show_disclaimer():
         title = "⚠️تنبيه طبي⚠️"
         text = (
             "يقدم نظام VitaVision معلومات وتحليلات صحية مبنية على نتائج الفحوصات المخبرية ونطاقات مرجعية طبية محدده "
-            "وهو مخصص لأغراض تعليمية وتوعوية فقء ولا يُعتبر بديلاً عن التشخيص الطبي أو الاستشارة أو العلاج.\n\n"
+            "وهو مخصص لأغراض تعليمية وتوعوية فقط ولا يُعتبر بديلاً عن التشخيص الطبي أو الاستشارة أو العلاج.\n\n"
             "رغم أن نظام VitaVision يسعى لتقديم تفسيرات دقيقة ومفيدة، إلا أنه لا يأخذ بعين الاعتبار التاريخ الطبي "
             "للمستخدم أو الحالات الصحية أو الأدوية أو العوامل السريرية الأخرى التي قد تؤثر على النتائج.\n\n"
             "باستخدامك لنظام VitaVision، فإنك تقر بما يلي:\n"
@@ -1219,6 +1205,292 @@ hr { border-color: rgba(255,255,255,0.07) !important; margin: 32px 0 !important;
         padding: 13px 14px !important;
     }
 
+}
+
+/* ── iPhone layout hardening ──────────────── */
+@media (max-width: 520px) {
+    .block-container {
+        padding-left: 0.55rem !important;
+        padding-right: 0.55rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    .stTabs [data-baseweb="tab-list"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 7px !important;
+        gap: 4px !important;
+        margin: 14px auto 18px auto !important;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        padding: 8px 6px !important;
+        font-size: 12px !important;
+        text-align: center !important;
+    }
+
+    .vv-auth-bar {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    div.stButton > button,
+    div.stDownloadButton > button {
+        height: auto !important;
+        min-height: 44px !important;
+        padding: 10px 8px !important;
+        white-space: normal !important;
+        line-height: 1.25 !important;
+    }
+
+    div.stButton > button p,
+    div.stDownloadButton > button p {
+        white-space: normal !important;
+        line-height: 1.25 !important;
+        font-size: 12.5px !important;
+    }
+
+    input,
+    textarea,
+    [data-testid="stTextInput"] input,
+    [data-testid="stNumberInput"] input {
+        font-size: 16px !important;
+    }
+
+    .vv-hero {
+        padding: 20px 12px 18px;
+        border-radius: 20px;
+        margin: 8px 0 18px;
+    }
+
+    .vv-hero-inner {
+        grid-template-columns: 1fr !important;
+        gap: 18px;
+    }
+
+    .vv-hero-kicker {
+        font-size: 10.5px;
+        padding: 6px 10px;
+        margin-bottom: 10px;
+    }
+
+    .vv-hero-title {
+        font-size: clamp(36px, 12.5vw, 48px);
+        line-height: 1;
+        letter-spacing: -1px;
+        margin-bottom: 10px;
+    }
+
+    .vv-hero-subtitle {
+        font-size: 13.5px;
+        line-height: 1.62;
+        margin-bottom: 14px;
+    }
+
+    .vv-hero-badges {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .vv-hero-badge {
+        width: auto;
+        min-width: 0;
+        padding: 8px 7px;
+        font-size: 10.6px;
+        line-height: 1.25;
+        text-align: center;
+        white-space: normal;
+    }
+
+    .vv-hero-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+        margin-top: 14px;
+    }
+
+    .vv-hero-stat {
+        min-width: 0;
+        padding: 9px 6px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .vv-hero-stat strong {
+        font-size: 18px;
+        margin-bottom: 4px;
+    }
+
+    .vv-hero-stat span {
+        font-size: 9.4px;
+        line-height: 1.25;
+    }
+
+    .vv-hero-panel {
+        padding: 14px 11px;
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .vv-mini-progress-title {
+        font-size: 13.5px;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .vv-snake-flow {
+        grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1fr) !important;
+        grid-auto-rows: 104px;
+        row-gap: 8px;
+        column-gap: 0;
+        gap: 8px 0 !important;
+        margin-top: 8px;
+        padding: 4px 0;
+        min-width: 0;
+    }
+
+    .vv-curve-link {
+        display: block !important;
+        left: calc(50% - 24px);
+        width: 48px;
+        height: 112px;
+        filter: drop-shadow(0 0 5px rgba(0,191,255,0.42));
+    }
+
+    .vv-curve-link.c12 { top: 52px; }
+    .vv-curve-link.c23 { top: 164px; }
+    .vv-curve-link.c34 { top: 276px; }
+
+    .vv-snake-flow.ltr .vv-curve-link.c12,
+    .vv-snake-flow.ltr .vv-curve-link.c34,
+    .vv-snake-flow.rtl .vv-curve-link.c23 {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 112' preserveAspectRatio='none'%3E%3Cpath d='M1 0 C48 20 1 92 47 112' fill='none' stroke='%2300BFFF' stroke-width='2.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+
+    .vv-snake-flow.ltr .vv-curve-link.c23,
+    .vv-snake-flow.rtl .vv-curve-link.c12,
+    .vv-snake-flow.rtl .vv-curve-link.c34 {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 112' preserveAspectRatio='none'%3E%3Cpath d='M47 0 C0 20 47 92 1 112' fill='none' stroke='%2300BFFF' stroke-width='2.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+
+    .vv-snake-step,
+    .vv-snake-step.s1,
+    .vv-snake-step.s2,
+    .vv-snake-step.s3,
+    .vv-snake-step.s4 {
+        width: 100%;
+        max-width: none;
+        height: 104px;
+        min-height: 104px;
+        padding: 9px 8px;
+        border-radius: 13px;
+        overflow: hidden;
+    }
+
+    .vv-snake-step.s1,
+    .vv-snake-step.s3 {
+        grid-column: 1 !important;
+    }
+
+    .vv-snake-step.s2,
+    .vv-snake-step.s4 {
+        grid-column: 3 !important;
+    }
+
+    .vv-snake-flow.rtl .vv-snake-step.s1,
+    .vv-snake-flow.rtl .vv-snake-step.s3 {
+        grid-column: 3 !important;
+    }
+
+    .vv-snake-flow.rtl .vv-snake-step.s2,
+    .vv-snake-flow.rtl .vv-snake-step.s4 {
+        grid-column: 1 !important;
+    }
+
+    .vv-snake-head {
+        gap: 5px;
+        margin-bottom: 4px;
+        align-items: center;
+    }
+
+    .vv-snake-num {
+        width: 23px;
+        height: 23px;
+        border-radius: 8px;
+        font-size: 10px;
+    }
+
+    .vv-step-title {
+        font-size: 11.2px;
+        line-height: 1.15;
+    }
+
+    .vv-step-text {
+        font-size: 9.2px;
+        line-height: 1.28;
+    }
+
+    .vv-workflow,
+    .vv-choice-grid,
+    .vv-progress-flow {
+        grid-template-columns: 1fr !important;
+    }
+
+    .vv-choice-card {
+        min-height: auto;
+        padding: 20px 18px;
+    }
+
+    .vv-page-topbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media (max-width: 380px) {
+    .vv-hero {
+        padding: 18px 10px 16px;
+    }
+
+    .vv-hero-panel {
+        padding: 12px 9px;
+    }
+
+    .vv-snake-flow {
+        grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr) !important;
+        grid-auto-rows: 108px;
+    }
+
+    .vv-curve-link {
+        left: calc(50% - 21px);
+        width: 42px;
+        height: 116px;
+    }
+
+    .vv-curve-link.c12 { top: 54px; }
+    .vv-curve-link.c23 { top: 170px; }
+    .vv-curve-link.c34 { top: 286px; }
+
+    .vv-snake-step,
+    .vv-snake-step.s1,
+    .vv-snake-step.s2,
+    .vv-snake-step.s3,
+    .vv-snake-step.s4 {
+        height: 108px;
+        min-height: 108px;
+        padding: 8px 7px;
+    }
+
+    .vv-step-title {
+        font-size: 10.6px;
+    }
+
+    .vv-step-text {
+        font-size: 8.8px;
+    }
 }
 
 </style>
@@ -3252,37 +3524,66 @@ with contact_tab:
     align   = "right" if is_arabic else "left"
 
     st.html(f"""
-<div class="vv-card" style="direction:{dir_val}; text-align:{align};">
-    <div class="vv-card-title">  {tr("Contact Us", "تواصل معنا")}</div>
-    <div class="vv-card-text" style="margin-bottom:20px;">
+<div class="vv-card" style="direction:{dir_val}; text-align:{align}; overflow:hidden;">
+    <div class="vv-card-title">{tr("Contact Us", "تواصل معنا")}</div>
+
+    <div class="vv-card-text" style="margin-bottom:22px;">
         {tr(
-            "For any inquiries or feedback, feel free to reach out through the following channels:",
-            "لأي استفسار أو ملاحظات، تواصل معنا عبر القنوات التالية:"
+            "For any inquiries or feedback, feel free to reach out through the following channel:",
+            "لأي استفسار أو ملاحظات، تواصل معنا عبر القناة التالية:"
         )}
     </div>
 
     <div style="
-display:grid;
-grid-template-columns:420px;
-justify-content:center;
-gap:14px;
-">
+        display:flex;
+        justify-content:center;
+        width:100%;
+    ">
+        <a href="mailto:info@vitavision.com"
+           style="
+               text-decoration:none;
+               width:100%;
+               max-width:420px;
+               min-width:0;
+           ">
+            <div style="
+                background:rgba(0,191,255,0.05);
+                border:1px solid rgba(0,191,255,0.18);
+                border-radius:14px;
+                padding:18px 16px;
+                transition:all 0.2s;
+                display:flex;
+                flex-direction:column;
+                align-items:center;
+                justify-content:center;
+                text-align:center;
+                gap:8px;
+                width:100%;
+                min-width:0;
+                overflow:hidden;
+            ">
+                <span style="font-size:24px;">📧</span>
 
-        <a href="mailto:info@vitavision.com" style="text-decoration:none;">
-            <div style="background:rgba(0,191,255,0.05); border:1px solid rgba(0,191,255,0.18);
-                        border-radius:12px; padding:16px 18px; transition:all 0.2s;
-                        display:flex; align-items:center; gap:12px;"
-                 onmouseover="this.style.borderColor='rgba(0,191,255,0.50)';this.style.background='rgba(0,191,255,0.10)'"
-                 onmouseout="this.style.borderColor='rgba(0,191,255,0.18)';this.style.background='rgba(0,191,255,0.05)'">
-                <span style="font-size:22px;">📧</span>
-                <div>
-                    <div style="font-size:11px; color:#7A9BB5; text-transform:uppercase; letter-spacing:0.5px;">Email</div>
-                    <div style="font-size:14px; font-weight:600; color:#B8C8D8;">
-    info@vitavision.com
+                <div style="
+                    font-size:11px;
+                    color:#7A9BB5;
+                    text-transform:uppercase;
+                    letter-spacing:0.5px;
+                ">EMAIL</div>
+
+                <div style="
+                    font-size:14px;
+                    font-weight:700;
+                    color:#B8C8D8;
+                    max-width:100%;
+                    overflow-wrap:anywhere;
+                    word-break:break-word;
+                    line-height:1.4;
+                ">
+                    info@vitavision.com
                 </div>
             </div>
         </a>
-
     </div>
 </div>
 """)
