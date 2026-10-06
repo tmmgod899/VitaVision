@@ -185,8 +185,6 @@ Example:
 OPENAI_MODEL=gpt-4o-mini
 ```
 
-Do not upload API keys or secrets to GitHub.
-
 ---
 
 ## ☁️ Deployment
